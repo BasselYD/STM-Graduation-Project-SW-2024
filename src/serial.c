@@ -1,7 +1,7 @@
 #include "../include/serial.h"
 
 
-char *UART_receiveString(CMSDK_UART_TypeDef *UART)
+char *UART_ReceiveString_poll(CMSDK_UART_TypeDef *UART) // function used to recieve string using polling 
 {
 	uint8_t i = 0;
       char *Str = "1" ;
@@ -17,7 +17,7 @@ char *UART_receiveString(CMSDK_UART_TypeDef *UART)
          
 }
 
-char *UART_receiveString_int(CMSDK_UART_TypeDef *UART)
+char *UART_ReceiveString_int(CMSDK_UART_TypeDef *UART)  // function used to recieve string using interrupt 
 {
 	uint8_t i = 0;
       char *Str = "1" ;
@@ -34,7 +34,7 @@ char *UART_receiveString_int(CMSDK_UART_TypeDef *UART)
          
 }
 
-void UART_Transmit(CMSDK_UART_TypeDef *UART, char* text)
+void UART_TransmitString_poll(CMSDK_UART_TypeDef *UART, char* text)  // function used to transmit string using polling 
 {
       while (*text != '\0')
             {
@@ -45,7 +45,7 @@ void UART_Transmit(CMSDK_UART_TypeDef *UART, char* text)
             }
 }
 
-void UART_Transmit_int(CMSDK_UART_TypeDef *UART, char* text)
+void UART_TransmitString_int(CMSDK_UART_TypeDef *UART, char* text)  // function used to transmit string using interrupt 
 {
      
       while (*text != '\0')
@@ -55,6 +55,19 @@ void UART_Transmit_int(CMSDK_UART_TypeDef *UART, char* text)
                   text++;
                   semaphore = 0;
             }
+}
+
+
+
+void CMSDK_uart_SendChar(CMSDK_UART_TypeDef *UART, char txchar)   // function used to transmit one char 
+{
+      UART->DATA = (uint32_t)txchar;
+}
+
+
+char CMSDK_uart_ReceiveChar(CMSDK_UART_TypeDef *UART) // function used to recieve one char 
+{
+      return (char)(UART->DATA);
 }
 
 void UART_printf(const char *format, ...) {
@@ -71,18 +84,5 @@ void UART_printf(const char *format, ...) {
     va_end(args);
     
     // Transmit the formatted string via UART
-    UART_Transmit(CMSDK_UART0,buffer);
-}
-
-void CMSDK_uart_SendChar(CMSDK_UART_TypeDef *UART, char txchar)
-{
-      while(UART->STATE & UART_STATE_TX_BF_Msk);
-      UART->DATA = (uint32_t)txchar;
-}
-
-
-char CMSDK_uart_ReceiveChar(CMSDK_UART_TypeDef *UART)
-{
-      while(!(UART->STATE & UART_STATE_RX_BF_Msk));
-      return (char)(UART->DATA);
+   UART_TransmitString_int(CMSDK_UART0,buffer);
 }

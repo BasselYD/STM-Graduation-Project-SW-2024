@@ -247,7 +247,7 @@ void CMSDK_DUALTIMER_CONFIG (CMSDK_DUALTIMER_BOTH_TypeDef *DUALTIMER_BOTH, CMSDK
     else {cntrl_a |=0b00 << DUALTIMER1_CTRL_PRESCALE_Pos;}
     if(CONFIG->bits1 == 1) {cntrl_a |= DUALTIMER1_CTRL_SIZE_Msk;}
 
-    DUALTIMER_BOTH -> Timer1Control |= cntrl_a ;
+    DUALTIMER_BOTH -> Timer1Control = cntrl_a ;
 
     uint32_t cntrl_b = 0; //Timer 2 control signal
 
@@ -260,7 +260,7 @@ void CMSDK_DUALTIMER_CONFIG (CMSDK_DUALTIMER_BOTH_TypeDef *DUALTIMER_BOTH, CMSDK
     else {cntrl_b |=0b00 << DUALTIMER2_CTRL_PRESCALE_Pos;}
     if(CONFIG->bits2 == 1) {cntrl_b |= DUALTIMER2_CTRL_SIZE_Msk;}
 
-    DUALTIMER_BOTH -> Timer2Control |= cntrl_b ;
+    DUALTIMER_BOTH -> Timer2Control = cntrl_b ;
 }
 
 

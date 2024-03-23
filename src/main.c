@@ -29,6 +29,7 @@
 #include "../include/watchdog_driver.h"
 #include "../include/timer_driver.h"
 #include "../include/dualtimer_driver.h"
+#include "../include/serial.h"
 
 
 extern uint32_t _etext;
@@ -49,9 +50,10 @@ CMSDK_GPIO_Configuration GPIO_Config;
 
 void SystemInit(void) {
 
-    NVIC_EnableIRQ(21);
+    NVIC_EnableIRQ(21); //TX0 Interuppt enable 
+    NVIC_EnableIRQ(27); //RX1 Interrupt enable 
 
-    UART0_Config.divider = 16;
+    UART0_Config.divider = 16;      
     UART0_Config.tx_en = 1;
     UART0_Config.rx_en = 0;
     UART0_Config.tx_irq_en = 1;
@@ -59,11 +61,26 @@ void SystemInit(void) {
     UART0_Config.tx_ovrirq_en = 1;
     UART0_Config.rx_ovrirq_en = 0;
     CMSDK_UART_Config(CMSDK_UART0, &UART0_Config);
+    
+    UART1_Config.divider = 32;
+    UART1_Config.tx_en = 0;
+    UART1_Config.rx_en = 1;
+    UART1_Config.tx_irq_en = 0;
+    UART1_Config.rx_irq_en = 1;
+    UART1_Config.tx_ovrirq_en = 0;
+    UART1_Config.rx_ovrirq_en = 1;
+    CMSDK_UART_Config(CMSDK_UART1, &UART1_Config);
 
 }
 
 int main(void) {
-    CMSDK_uart_SendChar(CMSDK_UART0, (char)0x35);
+    UART_TransmitString_poll(CMSDK_UART0,"Hello"); /////////////////// transmit polling
+
+    UART_TransmitString_int(CMSDK_UART0,"Hello"); /////////////////// transmit interrupt
+
+    str = UART_ReceiveString_poll(CMSDK_UART1); ///////////////////// recieve polling
+
+    str = UART_ReceiveString_int(CMSDK_UART1);  ///////////////// recieve interrupt
 }
 
 void __attribute__((used)) Reset_Handler(void)
@@ -225,6 +242,7 @@ void __attribute__((used)) UART0_RX_INT_Handler(void)
 void __attribute__((used)) UART0_TX_INT_Handler(void)
 {
     CMSDK_uart_ClearTxIRQ(CMSDK_UART0);
+    semaphore = 1;
 }
 
 void __attribute__((used)) UART0_RXOV_INT_Handler(void)
@@ -241,12 +259,13 @@ void __attribute__((used)) UART0_TXOV_INT_Handler(void)
 
 void __attribute__((used)) UART0_COMB_INT_Handler(void)
 {
-    CMSDK_uart_ClearTxIRQ(CMSDK_UART0);
+    
 }
 
 void __attribute__((used)) UART1_RX_INT_Handler(void)
 {
-
+    CMSDK_uart_ClearRxIRQ(CMSDK_UART1);
+    semaphore_rx = 1;
 }
 
 void __attribute__((used)) UART1_TX_INT_Handler(void)

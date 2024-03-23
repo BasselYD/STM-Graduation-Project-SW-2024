@@ -44,7 +44,7 @@ CFLAGS:=$(FLAGS) $(OPT) -fno-common -g3 -Wall -Werror -Wextra -MD -I$(INC_DIR) -
 #	-Wall -Werror -Wextra:  enable additional warning messages during compilation and treat them as errors (-Werror).
 #	 						-Wall enables most warning messages, -Wextra enables additional warnings beyond those enabled by -Wall.
 
-LDFLAGS:=$(FLAGS) -TlinkerScript.ld -nostartfiles -nostdlib -lnosys -flto
+LDFLAGS:=$(FLAGS) -TlinkerScript.ld -nostartfiles --specs=nosys.specs -lnosys -flto
 #	-Tminimal.ld: This flag specifies the linker script (minimal.ld).
 #	-nostartfiles: Tells the linker not to use the standard system startup files.
 #	-nostdlib: Instructs the linker not to use the standard system libraries.

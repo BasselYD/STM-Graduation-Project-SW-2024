@@ -78,7 +78,7 @@ void CMSDK_WATCHDOG_CONFIG (CMSDK_WATCHDOG_TypeDef *WATCHDOG , CMSDK_WATCHDOG_Co
 	  uint32_t cntrl = 0;
       if(CONFIG->irq_en == 1) {cntrl |= WATCHDOG_CTRL_INTEN_Msk;}
       if(CONFIG->resen== 1) {cntrl |= WATCHDOG_CTRL_RESEN_Msk;}
-	  WATCHDOG -> CTRL |= cntrl ;
+	  WATCHDOG -> CTRL = cntrl ;
 
 }
 

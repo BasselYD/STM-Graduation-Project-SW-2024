@@ -103,7 +103,7 @@ void CMSDK_TIMER_CONFIG (CMSDK_TIMER_TypeDef *TIMER , CMSDK_TIMER_Configuration 
       if(CONFIG->enable==1)     {cntrl |=TIMER_CTRL_EN_Msk;}
       if(CONFIG->extin==1)      {cntrl |=TIMER_CTRL_SELEXTEN_Msk;}
       if(CONFIG->extinclk==1)   {cntrl |=TIMER_CTRL_SELEXTEN_Msk;}
-      TIMER->CTRL |= cntrl;
+      TIMER->CTRL = cntrl;
 }
 
 
