@@ -21,15 +21,17 @@
  * limitations under the License.
  */
 
-
+#include  <stdio.h>
 #include <stdint.h>
-#include "../include/system_macros.h"
-#include "../include/gpio_driver.h"
-#include "../include/uart_driver.h"
-#include "../include/watchdog_driver.h"
-#include "../include/timer_driver.h"
-#include "../include/dualtimer_driver.h"
-#include "../include/serial.h"
+#include <string.h>
+#include <stdarg.h> 
+
+#include "system_macros.h"
+#include "gpio_driver.h"
+#include "watchdog_driver.h"
+#include "timer_driver.h"
+#include "dualtimer_driver.h"
+#include "serial.h"
 
 
 extern uint32_t _etext;
@@ -41,11 +43,18 @@ extern uint32_t _ebss;
 /* stack declared in blinky.ld */
 extern const uint32_t StackTop;
 
+
+/// global flags for interrupt functions
+int semaphore = 0;
+int semaphore_rx = 0;
+
+char* str;
+
 CMSDK_WATCHDOG_Configuration WDog_Config;
 CMSDK_DUALTIMER_Configuration DualTimers_Config;
 CMSDK_TIMER_Configuration Timer_Config;
-CMSDK_UART_Configuration UART0_Config;
-CMSDK_UART_Configuration UART1_Config;
+UART_Configuration UART0_Config;
+UART_Configuration UART1_Config;
 CMSDK_GPIO_Configuration GPIO_Config;
 
 void SystemInit(void) {
@@ -53,35 +62,47 @@ void SystemInit(void) {
     NVIC_EnableIRQ(21); //TX0 Interuppt enable 
     NVIC_EnableIRQ(27); //RX1 Interrupt enable 
 
-    UART0_Config.divider = 16;      
-    UART0_Config.tx_en = 1;
-    UART0_Config.rx_en = 0;
-    UART0_Config.tx_irq_en = 1;
-    UART0_Config.rx_irq_en = 0;
-    UART0_Config.tx_ovrirq_en = 1;
-    UART0_Config.rx_ovrirq_en = 0;
-    CMSDK_UART_Config(CMSDK_UART0, &UART0_Config);
-    
-    UART1_Config.divider = 32;
-    UART1_Config.tx_en = 0;
-    UART1_Config.rx_en = 1;
-    UART1_Config.tx_irq_en = 0;
-    UART1_Config.rx_irq_en = 1;
-    UART1_Config.tx_ovrirq_en = 0;
-    UART1_Config.rx_ovrirq_en = 1;
-    CMSDK_UART_Config(CMSDK_UART1, &UART1_Config);
+      UART0_Config.divider = 16;      
+      UART0_Config.tx_en = 1;
+      UART0_Config.rx_en = 0;
+      UART0_Config.tx_irq_en = 1;
+      UART0_Config.rx_irq_en = 0;
+      UART0_Config.tx_ovrirq_en = 1;
+      UART0_Config.rx_ovrirq_en = 0;
+      uart_driver_Config( UART0, &UART0_Config);
+      
+      UART1_Config.divider = 32;
+      UART1_Config.tx_en = 0;
+      UART1_Config.rx_en = 1;
+      UART1_Config.tx_irq_en = 0;
+      UART1_Config.rx_irq_en = 1;
+      UART1_Config.tx_ovrirq_en = 0;
+      UART1_Config.rx_ovrirq_en = 1;
+      uart_driver_Config( UART1, &UART1_Config);
+
 
 }
 
 int main(void) {
-    UART_TransmitString_poll(CMSDK_UART0,"Hello"); /////////////////// transmit polling
 
-    UART_TransmitString_int(CMSDK_UART0,"Hello"); /////////////////// transmit interrupt
+    //serial_UART_transmit_string_poll( UART0,"Hello"); /////////////////// transmit polling
 
-    str = UART_ReceiveString_poll(CMSDK_UART1); ///////////////////// recieve polling
+    //serial_UART_transmit_string_int( UART0,"Hello"); /////////////////// transmit interrupt
 
-    str = UART_ReceiveString_int(CMSDK_UART1);  ///////////////// recieve interrupt
+    //serial_UART_receive_string_poll( UART1); ///////////////////// recieve polling
+
+    //serial_UART_receive_string_int( UART1);  ///////////////// recieve interrupt
+
+ 
+    // calling for printf function
+    const char *name = "nadeen";
+    int age = 23;
+    serial_UART_printf("name %s , age %d ",name,age);
+     
 }
+
+
+
 
 void __attribute__((used)) Reset_Handler(void)
 {
@@ -241,7 +262,7 @@ void __attribute__((used)) UART0_RX_INT_Handler(void)
 
 void __attribute__((used)) UART0_TX_INT_Handler(void)
 {
-    CMSDK_uart_ClearTxIRQ(CMSDK_UART0);
+   uart_driver_ClearTxIRQ( UART0);
     semaphore = 1;
 }
 
@@ -264,8 +285,9 @@ void __attribute__((used)) UART0_COMB_INT_Handler(void)
 
 void __attribute__((used)) UART1_RX_INT_Handler(void)
 {
-    CMSDK_uart_ClearRxIRQ(CMSDK_UART1);
+    uart_driver_ClearRxIRQ( UART1);
     semaphore_rx = 1;
+
 }
 
 void __attribute__((used)) UART1_TX_INT_Handler(void)
@@ -275,7 +297,7 @@ void __attribute__((used)) UART1_TX_INT_Handler(void)
 
 void __attribute__((used)) UART1_RXOV_INT_Handler(void)
 {
-
+  
 }
 
 void __attribute__((used)) UART1_TXOV_INT_Handler(void)
@@ -306,7 +328,7 @@ void __attribute__((used)) DUALTIMER_INT2_Handler(void)
 
 void __attribute__((used)) DUALTIMER_COMB_INT_Handler(void)
 {
-    CMSDK_uart_ClearTxIRQ(CMSDK_UART0);
+   
 }
 
 void __attribute__((used)) Default_Handler(void)

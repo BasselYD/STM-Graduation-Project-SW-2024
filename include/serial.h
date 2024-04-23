@@ -1,9 +1,17 @@
-#include "../include/uart_driver.h"
+#include "uart_driver.h"
+
+
 extern int semaphore;
 extern int semaphore_rx;
-char *UART_ReceiveString_poll(CMSDK_UART_TypeDef *UART);
-char *UART_ReceiveString_int(CMSDK_UART_TypeDef *UART);
-void UART_TransmitString_poll(CMSDK_UART_TypeDef *UART, char* text);
-void UART_TransmitString_int(CMSDK_UART_TypeDef *UART, char* text);
-void UART_printf(const char *format, ...);
+
+
+void serial_UART_receive_string_poll( UART_TypeDef *UART, char *Str);
+
+void serial_UART_receive_string_int( UART_TypeDef *UART, char *Str);
+
+void serial_UART_transmit_string_poll( UART_TypeDef *UART, char* text);
+
+void serial_UART_transmit_string_int( UART_TypeDef *UART, char* text);
+
+void serial_UART_printf(const char *format, ...);
 

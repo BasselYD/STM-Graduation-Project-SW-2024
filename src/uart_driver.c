@@ -1,86 +1,178 @@
-#include "../include/uart_driver.h"
+#include "uart_driver.h"
 
 
 
 
-//Uart get receiver buffer status
-uint32_t CMSDK_uart_GetRxBufferFull(CMSDK_UART_TypeDef *UART)
+/*
+ desc :  Returns whether the RX buffer is full.
+ args : *UART , A pointer to the  UART_TypeDef structure representing the UART interface.
+ return : RxBufferFull 
+ */
+
+uint32_t uart_driver_GetRxBufferFull( UART_TypeDef *UART)
 {
       return ((UART->STATE & UART_STATE_RX_BF_Msk)>> UART_STATE_RX_BF_Pos);
 }
 
 
-//Uart get transmitter buffer status
-uint32_t CMSDK_uart_GetTxBufferFull(CMSDK_UART_TypeDef *UART)
+
+
+
+/*
+ desc :  Returns whether the TX buffer is full.
+ args : *UART Pointer
+ return :TxBufferFull
+ */
+
+uint32_t uart_driver_GetTxBufferFull( UART_TypeDef *UART)
 {
       return ((UART->STATE & UART_STATE_TX_BF_Msk)>> UART_STATE_TX_BF_Pos);
 }
 
 
 
-//Uart return uart overrun status
-uint32_t CMSDK_uart_GetOverrunStatus(CMSDK_UART_TypeDef *UART)
+
+
+/*
+ desc :  returns the current overrun status of both the RX & TX buffers.
+ args :  *UART Pointer
+ return 0 : - No overrun
+ return 1 : - TX overrun
+ return 2 : - RX overrun
+ return 3 : - TX & RX overrun
+ */
+
+uint32_t uart_driver_GetOverrunStatus( UART_TypeDef *UART)
 {
       return ((UART->STATE & (UART_CTRL_RX_OV_IRQ_EN_Msk | UART_CTRL_TX_OV_IRQ_EN_Msk))>>UART_CTRL_TX_OV_IRQ_EN_Pos);
 }
 
-/**
- *
- * @param *CMSDK_UART UART Pointer
- * @return 0 - No overrun
- * @return 1 - TX overrun
- * @return 2 - RX overrun
- * @return 3 - TX & RX overrun
- *
- * @brief  Clears the overrun status of both the RX & TX buffers and then returns the current overrun status.
+
+
+
+
+/*
+ desc :  Clears the overrun status of both the RX & TX buffers and then returns the current overrun status.
+ args :  *UART Pointer
+ return 0 : - No overrun
+ return 1 : - TX overrun
+ return 2 : - RX overrun
+ return 3 : - TX & RX overrun
  */
 
-uint32_t CMSDK_uart_ClearOverrunStatus(CMSDK_UART_TypeDef *UART)
+uint32_t uart_driver_ClearOverrunStatus( UART_TypeDef *UART)
 {
       UART->STATE = (UART_CTRL_TX_OV_IRQ_EN_Msk | UART_CTRL_RX_OV_IRQ_EN_Msk);
       return ((UART->STATE & (UART_CTRL_TX_OV_IRQ_EN_Msk | UART_CTRL_RX_OV_IRQ_EN_Msk)) >> UART_CTRL_TX_OV_IRQ_EN_Pos);
 }
 
 
-//Uart return baud divider value
-uint32_t CMSDK_uart_GetBaudDivider(CMSDK_UART_TypeDef *UART)
+
+
+
+/*
+ desc :  Returns the current UART Baud rate divider.
+ args :  *UART Pointer
+ return : BaudDiv
+ */
+
+uint32_t uart_driver_GetBaudDivider( UART_TypeDef *UART)
 {
       return UART->BAUDDIV;
 }
 
-void CMSDK_uart_SetBaudDivider(CMSDK_UART_TypeDef *UART, uint32_t divider)
+/*
+ desc :  Set the current UART Baud rate divider.
+ args :  *UART Pointer
+ args :  divider , The value to which the UART baud rate divider is to be set
+ return : none
+ */
+
+
+void uart_driver_SetBaudDivider( UART_TypeDef *UART, uint32_t divider)
 {
 UART->BAUDDIV = divider;
 }
 
 
-//Uart clear interrupt status
-uint32_t CMSDK_uart_GetTxIRQStatus(CMSDK_UART_TypeDef *UART)
+
+
+
+/*
+ desc :  Returns the TX interrupt status.
+ args : *UART Pointer
+ return : TXStatus
+ */
+
+uint32_t uart_driver_GetTxIRQStatus( UART_TypeDef *UART)
 {
       return ((UART->INTSTATUS & UART_INTCLEAR_TX_IRQ_Msk ) >> UART_INTCLEAR_TX_IRQ_Pos);
 }
 
-//Uart return interrupt status if interrupt is high or low
-uint32_t CMSDK_uart_GetRxIRQStatus(CMSDK_UART_TypeDef *UART)
+
+
+
+
+/*
+ desc :  Returns the RX interrupt status.
+ args : *UART Pointer
+ return : RXStatus
+ */
+
+uint32_t uart_driver_GetRxIRQStatus( UART_TypeDef *UART)
 {
       return ((UART->INTSTATUS & UART_INTCLEAR_RX_IRQ_Msk) >>UART_INTCLEAR_RX_IRQ_Pos);
 }
 
-//Uart clear transmitter interrupt
-void CMSDK_uart_ClearTxIRQ(CMSDK_UART_TypeDef *UART)
+
+
+
+
+/*
+ desc :  Clears the TX buffer full interrupt status. 
+ args : *UART Pointer
+ return : none
+ */
+
+void uart_driver_ClearTxIRQ( UART_TypeDef *UART)
 {
       UART->INTCLEAR = UART_INTCLEAR_TX_IRQ_Msk;
 }
 
-//Uart clear receiver interrupt
-void CMSDK_uart_ClearRxIRQ(CMSDK_UART_TypeDef *UART)
+
+
+
+
+/**
+ desc :  Clears the RX interrupt status.
+ args : *UART Pointer
+ return : none
+ */
+
+void uart_driver_ClearRxIRQ( UART_TypeDef *UART)
 {
       UART->INTCLEAR = UART_INTCLEAR_RX_IRQ_Msk;
 }
 
 
-//Uart configuration function
-uint32_t CMSDK_UART_Config(CMSDK_UART_TypeDef *UART, CMSDK_UART_Configuration *CONFIG)
+
+
+
+/*
+ desc : Initialises the UART specifying the UART Baud rate divider value and whether the send and recieve functionality is enabled. It also specifies which of the various interrupts are enabled.
+ args : *UART Pointer
+ args :   UART_Configuration a structure that contains the follow :
+       ( divider : The value to which the UART baud rate divider is to be set
+         tx_en :  Defines whether the UART transmit is to be enabled
+         rx_en :  Defines whether the UART receive is to be enabled
+         tx_irq_en : Defines whether the UART transmit buffer full interrupt is to be enabled
+         rx_irq_en : Defines whether the UART receive buffer full interrupt is to be enabled
+         tx_ovrirq_en : Defines whether the UART transmit buffer overrun interrupt is to be enabled
+         rx_ovrirq_en : Defines whether the UART receive buffer overrun interrupt is to be enabled
+ return : 1 if initialisation failed, 0 if successful.
+ */
+
+uint32_t uart_driver_Config( UART_TypeDef *UART,  UART_Configuration *CONFIG)
 {
       uint32_t new_ctrl=0;
 
@@ -99,3 +191,33 @@ uint32_t CMSDK_UART_Config(CMSDK_UART_TypeDef *UART, CMSDK_UART_Configuration *C
       else return 0;
 }
 
+
+
+
+
+/*
+ desc : Sends a character to the TX buffer for transmission.
+ args : *UART Pointer
+ args : txchar Character to be sent
+ return : none
+ */
+
+void uart_driver_send_char( UART_TypeDef *UART, char txchar)   // function used to transmit one char 
+{
+      UART->DATA = (uint32_t)txchar;
+}
+
+
+
+
+
+/*
+ desc : returns the character from the RX buffer which has been received.
+ args : *UART Pointer
+ return : rxchar
+ */
+
+char uart_driver_receive_char( UART_TypeDef *UART) // function used to recieve one char 
+{
+      return (char)(UART->DATA);
+}

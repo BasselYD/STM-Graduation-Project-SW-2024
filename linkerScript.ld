@@ -1,5 +1,9 @@
 ENTRY(Reset_Handler)
 
+StackTop = ORIGIN(DRAM) + LENGTH(DRAM);
+_Min_Heap_Size = 0x200 ;    /* required amount of heap  */
+_Min_Stack_Size = 0x400 ;   /* required amount of stack */
+
 MEMORY
 {												
 	IRAM (rx) : ORIGIN = (0x00000000), LENGTH = 0x100000
@@ -29,7 +33,7 @@ SECTIONS
 		_sdata = .;
 
 		*(.data*)
-
+		
 		_edata = .;
 	} > DRAM
 
@@ -41,8 +45,16 @@ SECTIONS
 		*(.bss*)
 		*(COMMON)
 
-		StackTop = ORIGIN(DRAM) + LENGTH(DRAM);
-
 		_ebss = .;
 	} > DRAM
+
+	._user_heap_stack :
+  	{
+		. = ALIGN(4);
+		PROVIDE ( end = . );
+		PROVIDE ( _end = . );
+		. = . + _Min_Heap_Size;
+		. = . + _Min_Stack_Size;
+		. = ALIGN(4);
+	} >DRAM
 }

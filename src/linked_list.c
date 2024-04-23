@@ -291,7 +291,7 @@ void deallocate (Node** root){
 }
 
 
-int main () {
+/*int main () {
     Node* root = linked_list_create(9); 
 
     
@@ -350,7 +350,7 @@ int main () {
 
     return 0;
 
-}
+}*/
 
 
 

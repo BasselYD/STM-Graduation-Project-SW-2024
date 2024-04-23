@@ -1,76 +1,98 @@
-#include "../include/serial.h"
+#include "serial.h"
 
 
-char *UART_ReceiveString_poll(CMSDK_UART_TypeDef *UART) // function used to recieve string using polling 
+/*
+ desc : Receive a string from UART using polling.
+ args : *UART , A pointer to the  UART_TypeDef structure representing the UART interface.
+ return : none.
+ */
+
+void serial_UART_receive_string_poll(UART_TypeDef *UART, char* Str) 
 {
 	uint8_t i = 0;
-      char *Str = "1" ;
-	Str[i] = CMSDK_uart_ReceiveChar(UART); 
+      //char *Str = "1" ;
+	Str[i] = uart_driver_receive_char(UART); 
       
-	while(Str[i] != '\n')
+	while(Str[i] != '\0')
 	{	
             while(!(UART->STATE & UART_STATE_RX_BF_Msk)) {};
             i++;
-		Str[i] = CMSDK_uart_ReceiveChar(UART);  
+		Str[i] = uart_driver_receive_char(UART);  
 	}
-      return Str ;
+      //return Str ;
          
 }
 
-char *UART_ReceiveString_int(CMSDK_UART_TypeDef *UART)  // function used to recieve string using interrupt 
+
+
+
+/*
+ desc : Receive a string from UART using interrupts.
+ args : *UART Pointer
+ return : none.
+ */
+
+void serial_UART_receive_string_int( UART_TypeDef *UART, char *Str)   
 {
 	uint8_t i = 0;
-      char *Str = "1" ;
-	Str[i] = CMSDK_uart_ReceiveChar(UART); 
+      //char *Str = "1" ;
+	Str[i] = uart_driver_receive_char(UART); 
       
 	while(Str[i] != '\n')
 	{	
             while (semaphore_rx != 1);
             i++;
             semaphore_rx = 0;
-		Str[i] = CMSDK_uart_ReceiveChar(UART);  
-	}
-      return Str ;
-         
+		Str[i] = uart_driver_receive_char(UART);  
+	}       
 }
 
-void UART_TransmitString_poll(CMSDK_UART_TypeDef *UART, char* text)  // function used to transmit string using polling 
+
+
+
+/*
+ desc :  Transmit a string via UART using polling.
+ args :  *UART Pointer
+ args :  text The string to be transmitted.
+ return : none.
+ */
+
+void serial_UART_transmit_string_poll( UART_TypeDef *UART, char* text)  
 {
       while (*text != '\0')
             {
                   if ((UART->STATE & 1) == 0) {
-                        CMSDK_uart_SendChar(UART,*text);
+                         uart_driver_send_char(UART,*text);
                         text++;
                   }  
             }
 }
 
-void UART_TransmitString_int(CMSDK_UART_TypeDef *UART, char* text)  // function used to transmit string using interrupt 
+
+
+
+/*
+ desc : Transmit a string via UART using interrupts.
+ args :  *UART Pointer
+ args :  text The string to be transmitted.
+ return : none.
+ */
+
+void serial_UART_transmit_string_int( UART_TypeDef *UART, char* text)  
 {
      
       while (*text != '\0')
             {
                   while (semaphore != 1);
-                  CMSDK_uart_SendChar(UART,*text);
+                  uart_driver_send_char(UART,*text);
                   text++;
                   semaphore = 0;
             }
 }
 
-
-
-void CMSDK_uart_SendChar(CMSDK_UART_TypeDef *UART, char txchar)   // function used to transmit one char 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void serial_UART_printf(const char *format, ...) 
 {
-      UART->DATA = (uint32_t)txchar;
-}
-
-
-char CMSDK_uart_ReceiveChar(CMSDK_UART_TypeDef *UART) // function used to recieve one char 
-{
-      return (char)(UART->DATA);
-}
-
-void UART_printf(const char *format, ...) {
     char buffer[256]; // Buffer to hold formatted string
     va_list args;     // Variable argument list
     
@@ -84,5 +106,5 @@ void UART_printf(const char *format, ...) {
     va_end(args);
     
     // Transmit the formatted string via UART
-   UART_TransmitString_int(CMSDK_UART0,buffer);
+  serial_UART_transmit_string_int( UART0,buffer);
 }

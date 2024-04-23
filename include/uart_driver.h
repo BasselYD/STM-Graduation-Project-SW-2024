@@ -15,7 +15,7 @@
 
 
 
-//////////////////////////////////Register layering of uart
+//Register layering of uart
 
 typedef struct 
 {
@@ -28,7 +28,7 @@ typedef struct
     };
   __IO   uint32_t  BAUDDIV;       // Offset: 0x010 Baudrate Divider Register (R/W) 
 
-} CMSDK_UART_TypeDef;
+}  UART_TypeDef;
 
 typedef struct 
 {
@@ -40,93 +40,34 @@ typedef struct
   uint32_t tx_ovrirq_en;
   uint32_t rx_ovrirq_en;
 
-} CMSDK_UART_Configuration;
-
-//extern int semaphore;
-//extern int semaphore_rx;
-
-//Uart get receiver buffer status
-
-uint32_t CMSDK_uart_GetRxBufferFull(CMSDK_UART_TypeDef *UART);
+}  UART_Configuration;
 
 
-//Uart get transmitter buffer status
+uint32_t uart_driver_GetRxBufferFull( UART_TypeDef *UART);
 
-uint32_t CMSDK_uart_GetTxBufferFull(CMSDK_UART_TypeDef *UART);
+uint32_t uart_driver_GetTxBufferFull( UART_TypeDef *UART);
 
-//Uart transmit character
+void uart_driver_send_char( UART_TypeDef *UART, char txchar);
 
-void CMSDK_uart_SendChar(CMSDK_UART_TypeDef *UART, char txchar);
+char uart_driver_receive_char( UART_TypeDef *UART);
 
+uint32_t uart_driver_GetOverrunStatus( UART_TypeDef *UART);
 
-//Uart receive character
+uint32_t uart_driver_ClearOverrunStatus( UART_TypeDef *UART);
 
-char CMSDK_uart_ReceiveChar(CMSDK_UART_TypeDef *UART);
+uint32_t uart_driver_GetBaudDivider( UART_TypeDef *UART);
 
+void uart_driver_SetBaudDivider( UART_TypeDef *UART, uint32_t divider);
 
-//Uart return uart overrun status
+uint32_t uart_driver_GetTxIRQStatus( UART_TypeDef *UART);
 
-uint32_t CMSDK_uart_GetOverrunStatus(CMSDK_UART_TypeDef *UART);
+uint32_t uart_driver_GetRxIRQStatus( UART_TypeDef *UART);
 
-/**
- *
- * @param *CMSDK_UART UART Pointer
- * @return 0 - No overrun
- * @return 1 - TX overrun
- * @return 2 - RX overrun
- * @return 3 - TX & RX overrun
- *
- * @brief  Clears the overrun status of both the RX & TX buffers and then returns the current overrun status.
- */
+void uart_driver_ClearTxIRQ( UART_TypeDef *UART);
 
-uint32_t CMSDK_uart_ClearOverrunStatus(CMSDK_UART_TypeDef *UART);
+void uart_driver_ClearRxIRQ( UART_TypeDef *UART);
 
-
-//Uart return baud divider value
-
-uint32_t CMSDK_uart_GetBaudDivider(CMSDK_UART_TypeDef *UART);
-
-void CMSDK_uart_SetBaudDivider(CMSDK_UART_TypeDef *UART, uint32_t divider);
-
-
-//Uart clear interrupt status
-
-uint32_t CMSDK_uart_GetTxIRQStatus(CMSDK_UART_TypeDef *UART);
-
-//Uart return interrupt status if interrupt is high or low
-
-uint32_t CMSDK_uart_GetRxIRQStatus(CMSDK_UART_TypeDef *UART);
-
-//Uart clear transmitter interrupt
-
-void CMSDK_uart_ClearTxIRQ(CMSDK_UART_TypeDef *UART);
-
-//Uart clear receiver interrupt
-
-void CMSDK_uart_ClearRxIRQ(CMSDK_UART_TypeDef *UART);
-
-
-//Uart configuration function
-
-uint32_t CMSDK_UART_Config(CMSDK_UART_TypeDef *UART, CMSDK_UART_Configuration *CONFIG);
-
-//void UART_receiveString(CMSDK_UART_TypeDef *UART , char *Str)
-//void UART_Transmit(CMSDK_UART_TypeDef *UART, char* text);
-
-
-//void UART_Transmit_int(CMSDK_UART_TypeDef *UART, char* text);
-
-//void UART_printf(const char *format, ...);
-
-//void UART_receiveString_int(CMSDK_UART_TypeDef *UART,char *Str);
-//char *UART_receiveString_int(CMSDK_UART_TypeDef *UART);
-
-
-//char *UART_receiveString(CMSDK_UART_TypeDef *UART);
-//char *UART_receiveString_int(CMSDK_UART_TypeDef *UART);
-//void UART_Transmit(CMSDK_UART_TypeDef *UART, char* text);
-//void UART_Transmit_int(CMSDK_UART_TypeDef *UART, char* text);
-//void UART_printf(const char *format, ...);
+uint32_t uart_driver_Config( UART_TypeDef *UART,  UART_Configuration *CONFIG);
 
 #ifdef __cplusplus
 }

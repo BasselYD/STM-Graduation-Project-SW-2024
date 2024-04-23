@@ -17,14 +17,14 @@
 #define CMSDK_DUALTIMER_BASE    (CMSDK_APB_BASE + 0x5000UL)
 #define CMSDK_DUALTIMER_1_BASE  (CMSDK_DUALTIMER_BASE)
 #define CMSDK_DUALTIMER_2_BASE  (CMSDK_DUALTIMER_BASE + 0x20UL)
-#define CMSDK_UART0_BASE        (CMSDK_APB_BASE)
-#define CMSDK_UART1_BASE        (CMSDK_APB_BASE + 0x4000UL)
-#define CMSDK_UART2_BASE        (CMSDK_APB_BASE + 0x6000UL)
+#define  UART0_BASE        (CMSDK_APB_BASE)
+#define  UART1_BASE        (CMSDK_APB_BASE + 0x4000UL)
+#define  UART2_BASE        (CMSDK_APB_BASE + 0x6000UL)
 // Uart 3 is fitted to FPGA build for Arduino support
-#define CMSDK_UART3_BASE        (CMSDK_APB_BASE + 0x7000UL)
+#define  UART3_BASE        (CMSDK_APB_BASE + 0x7000UL)
 #define CMSDK_WATCHDOG_BASE     (CMSDK_APB_BASE + 0x1000UL)
 // Uart 4 is fitted to FPGA build for Arduino support
-#define CMSDK_UART4_BASE        (CMSDK_APB_BASE + 0x9000UL)
+#define  UART4_BASE        (CMSDK_APB_BASE + 0x9000UL)
 #define CMSDK_PL230_BASE        (CMSDK_APB_BASE + 0xF000UL)
 
 /* AHB peripherals                                                           */
@@ -35,13 +35,13 @@
 
 //////////////////////////////////Define used pointers
 
-#define CMSDK_UART0             ((CMSDK_UART_TypeDef   *) CMSDK_UART0_BASE   )
-#define CMSDK_UART1             ((CMSDK_UART_TypeDef   *) CMSDK_UART1_BASE   )
+#define  UART0             (( UART_TypeDef   *)  UART0_BASE   )
+#define  UART1             (( UART_TypeDef   *)  UART1_BASE   )
 
-#define CMSDK_UART2             ((CMSDK_UART_TypeDef   *) CMSDK_UART2_BASE   )
-#define CMSDK_UART3             ((CMSDK_UART_TypeDef   *) CMSDK_UART3_BASE   )
+#define  UART2             (( UART_TypeDef   *)  UART2_BASE   )
+#define  UART3             (( UART_TypeDef   *)  UART3_BASE   )
 
-#define CMSDK_UART4             ((CMSDK_UART_TypeDef   *) CMSDK_UART4_BASE   )
+#define  UART4             (( UART_TypeDef   *)  UART4_BASE   )
 #define CMSDK_TIMER0            ((CMSDK_TIMER_TypeDef  *) CMSDK_TIMER0_BASE  )
 
 #define CMSDK_TIMER1            ((CMSDK_TIMER_TypeDef  *) CMSDK_TIMER1_BASE  )
