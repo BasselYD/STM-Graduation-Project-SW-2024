@@ -42,9 +42,9 @@
 #define  UART3             (( UART_TypeDef   *)  UART3_BASE   )
 
 #define  UART4             (( UART_TypeDef   *)  UART4_BASE   )
-#define CMSDK_TIMER0            ((CMSDK_TIMER_TypeDef  *) CMSDK_TIMER0_BASE  )
+#define CMSDK_TIMER0            ((timer_typedef  *) CMSDK_TIMER0_BASE  )
 
-#define CMSDK_TIMER1            ((CMSDK_TIMER_TypeDef  *) CMSDK_TIMER1_BASE  )
+#define CMSDK_TIMER1            ((timer_typedef  *) CMSDK_TIMER1_BASE  )
 #define CMSDK_DUALTIMER         ((CMSDK_DUALTIMER_BOTH_TypeDef  *) CMSDK_DUALTIMER_BASE )
 
 #define CMSDK_DUALTIMER1        ((CMSDK_DUALTIMER_SINGLE_TypeDef  *) CMSDK_DUALTIMER_1_BASE )

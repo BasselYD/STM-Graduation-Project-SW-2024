@@ -32,6 +32,7 @@
 #include "timer_driver.h"
 #include "dualtimer_driver.h"
 #include "serial.h"
+#include "software_timer.h"
 
 
 extern uint32_t _etext;
@@ -52,33 +53,40 @@ char* str;
 
 CMSDK_WATCHDOG_Configuration WDog_Config;
 CMSDK_DUALTIMER_Configuration DualTimers_Config;
-CMSDK_TIMER_Configuration Timer_Config;
+timer_configuration Timer_Config;
 UART_Configuration UART0_Config;
 UART_Configuration UART1_Config;
 CMSDK_GPIO_Configuration GPIO_Config;
 
+Timer *software_timer = NULL;
+
+void func1 (void){return;}
+void func2 (void){return;}
+void func3 (void){return;}
+
+
 void SystemInit(void) {
 
-    NVIC_EnableIRQ(21); //TX0 Interuppt enable 
-    NVIC_EnableIRQ(27); //RX1 Interrupt enable 
-
-      UART0_Config.divider = 16;      
-      UART0_Config.tx_en = 1;
-      UART0_Config.rx_en = 0;
-      UART0_Config.tx_irq_en = 1;
-      UART0_Config.rx_irq_en = 0;
-      UART0_Config.tx_ovrirq_en = 1;
-      UART0_Config.rx_ovrirq_en = 0;
-      uart_driver_Config( UART0, &UART0_Config);
-      
-      UART1_Config.divider = 32;
-      UART1_Config.tx_en = 0;
-      UART1_Config.rx_en = 1;
-      UART1_Config.tx_irq_en = 0;
-      UART1_Config.rx_irq_en = 1;
-      UART1_Config.tx_ovrirq_en = 0;
-      UART1_Config.rx_ovrirq_en = 1;
-      uart_driver_Config( UART1, &UART1_Config);
+    //NVIC_EnableIRQ(21); //TX0 Interuppt enable 
+    //NVIC_EnableIRQ(27); //RX1 Interrupt enable 
+//
+    //  UART0_Config.divider = 16;      
+    //  UART0_Config.tx_en = 1;
+    //  UART0_Config.rx_en = 0;
+    //  UART0_Config.tx_irq_en = 1;
+    //  UART0_Config.rx_irq_en = 0;
+    //  UART0_Config.tx_ovrirq_en = 1;
+    //  UART0_Config.rx_ovrirq_en = 0;
+    //  uart_driver_Config( UART0, &UART0_Config);
+    //  
+    //  UART1_Config.divider = 32;
+    //  UART1_Config.tx_en = 0;
+    //  UART1_Config.rx_en = 1;
+    //  UART1_Config.tx_irq_en = 0;
+    //  UART1_Config.rx_irq_en = 1;
+    //  UART1_Config.tx_ovrirq_en = 0;
+    //  UART1_Config.rx_ovrirq_en = 1;
+    //  uart_driver_Config( UART1, &UART1_Config);
 
 
 }
@@ -95,11 +103,25 @@ int main(void) {
 
  
     // calling for printf function
-    const char *name = "nadeen";
-    int age = 23;
-    serial_UART_printf("name %s , age %d ",name,age);
+    //const char *name = "nadeen";
+    //int age = 23;
+    //serial_UART_printf("name %s , age %d ",name,age);
+
+    software_timer_init();
+
+    timer_id my_timer = timer1;
+    
+
+    add_timer(&software_timer,10,my_timer,&func1);
+    
+    my_timer = timer2;
+    add_timer(&software_timer,6,my_timer,&func2);
+    
+    my_timer = timer3;
+    add_timer(&software_timer,12,my_timer,&func3);
      
 }
+
 
 
 
@@ -107,19 +129,19 @@ int main(void) {
 void __attribute__((used)) Reset_Handler(void)
 {
      /* Copy init values from text to data */
-    uint32_t *init_values_ptr = &_etext;
-    uint32_t *data_ptr = &_sdata;
-
-    if (init_values_ptr != data_ptr) {
-        for (; data_ptr < &_edata;) {
-            *data_ptr++ = *init_values_ptr++;
-        }
-    }
-
-    /* Clear the zero segment */
-    for (uint32_t *bss_ptr = &_sbss; bss_ptr < &_ebss;) {
-        *bss_ptr++ = 0;
-    }
+    //uint32_t *init_values_ptr = &_etext;
+    //uint32_t *data_ptr = &_sdata;
+//
+    //if (init_values_ptr != data_ptr) {
+    //    for (; data_ptr < &_edata;) {
+    //        *data_ptr++ = *init_values_ptr++;
+    //    }
+    //}
+//
+    ///* Clear the zero segment */
+    //for (uint32_t *bss_ptr = &_sbss; bss_ptr < &_ebss;) {
+    //    *bss_ptr++ = 0;
+    //}
 
     /* Initialize System */
     SystemInit();
@@ -313,7 +335,8 @@ void __attribute__((used)) UART1_COMB_INT_Handler(void)
 
 void __attribute__((used)) TIMER_INT_Handler(void)
 {
-
+    timer_irq_handler();
+    update_timer(&software_timer);
 }
 
 void __attribute__((used)) DUALTIMER_INT1_Handler(void)

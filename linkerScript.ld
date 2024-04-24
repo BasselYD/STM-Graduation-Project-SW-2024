@@ -1,8 +1,8 @@
 ENTRY(Reset_Handler)
 
 StackTop = ORIGIN(DRAM) + LENGTH(DRAM);
-_Min_Heap_Size = 0x200 ;    /* required amount of heap  */
-_Min_Stack_Size = 0x400 ;   /* required amount of stack */
+_Min_Heap_Size = 0x80000 ;    /* required amount of heap  */
+_Min_Stack_Size = 0x10000 ;   /* required amount of stack */
 
 MEMORY
 {												
@@ -35,7 +35,7 @@ SECTIONS
 		*(.data*)
 		
 		_edata = .;
-	} > DRAM
+	} > DRAM AT > IRAM
 
 
 	.bss (NOLOAD):
